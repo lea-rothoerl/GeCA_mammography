@@ -28,7 +28,7 @@ def process_dicom_folder(input_root, output_root):
         for file in files:
             input_file_path = os.path.join(subdir, file)
 
-            if file.endswith(".dcm"):
+            if file.endswith(".dicom"):
                 # convert DICOM to PNG
                 output_file_path = os.path.join(output_subdir, file.replace(".dicom", ".png"))
                 dicom_to_png(input_file_path, output_file_path)
