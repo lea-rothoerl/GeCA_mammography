@@ -5,7 +5,7 @@ import os
 import shutil
 
 def dicom_to_png(dicom_path, output_path):
-    """Convert a DICOM image to PNG, ensuring valid pixel data."""
+    """Convert one DICOM image to PNG."""
     try:
         dicom_image = pydicom.dcmread(dicom_path)
 
@@ -23,13 +23,12 @@ def dicom_to_png(dicom_path, output_path):
         # convert to PNG
         image = Image.fromarray(image_array)
         image.save(output_path)
-        print(f"Converted: {dicom_path} → {output_path}")
 
     except Exception as e:
         print(f"Error processing {dicom_path}: {e}")
 
 def process_dicom_folder(input_root, output_root):
-    """Recursively process folders, converting DICOM images and copying index.html."""
+    """Process subfolders, convert DICOM images and copy index.html."""
     for subdir, _, files in os.walk(input_root):
         relative_path = os.path.relpath(subdir, input_root)
         output_subdir = os.path.join(output_root, relative_path)
@@ -40,7 +39,7 @@ def process_dicom_folder(input_root, output_root):
             input_file_path = os.path.join(subdir, file)
 
             # case-insensitive check for .dicom
-            if file.lower().endswith(".dicom") or file.lower().endswith(".dcm"):
+            if file.lower().endswith(".dicom"):
                 output_file_path = os.path.join(output_subdir, os.path.splitext(file)[0] + ".png")
                 dicom_to_png(input_file_path, output_file_path)
 
@@ -52,4 +51,4 @@ out_dir = "../png_images"
 
 process_dicom_folder(in_dir, out_dir)
 
-print("Done! Check the png_images folder.")
+print("Done!")
