@@ -5,20 +5,31 @@ import os
 import shutil
 
 def dicom_to_png(dicom_path, output_path):
-    """Convert one single DICOM image to PNG format."""
-    dicom_image = pydicom.dcmread(dicom_path)
-    image_array = dicom_image.pixel_array
+    """Convert a DICOM image to PNG, ensuring valid pixel data."""
+    try:
+        dicom_image = pydicom.dcmread(dicom_path)
 
-    # normalize to 0-255
-    image_array = (image_array - np.min(image_array)) / (np.max(image_array) - np.min(image_array)) * 255.0
-    image_array = image_array.astype(np.uint8)
+        # ensure the file contains pixel data
+        if not hasattr(dicom_image, "pixel_array"):
+            print(f"Skipping {dicom_path}: No pixel data found.")
+            return
 
-    # convert to PIL and save as PNG
-    image = Image.fromarray(image_array)
-    image.save(output_path)
+        image_array = dicom_image.pixel_array
+
+        # normalize pixel values to 0-255
+        image_array = (image_array - np.min(image_array)) / (np.max(image_array) - np.min(image_array)) * 255.0
+        image_array = image_array.astype(np.uint8)
+
+        # convert to PNG
+        image = Image.fromarray(image_array)
+        image.save(output_path)
+        print(f"Converted: {dicom_path} → {output_path}")
+
+    except Exception as e:
+        print(f"Error processing {dicom_path}: {e}")
 
 def process_dicom_folder(input_root, output_root):
-    """Walk through subfolders, convert DICOM images and copy index file."""
+    """Recursively process folders, converting DICOM images and copying index.html."""
     for subdir, _, files in os.walk(input_root):
         relative_path = os.path.relpath(subdir, input_root)
         output_subdir = os.path.join(output_root, relative_path)
@@ -28,19 +39,17 @@ def process_dicom_folder(input_root, output_root):
         for file in files:
             input_file_path = os.path.join(subdir, file)
 
-            if file.endswith(".dicom"):
-                # convert DICOM to PNG
-                output_file_path = os.path.join(output_subdir, file.replace(".dicom", ".png"))
+            # case-insensitive check for .dicom
+            if file.lower().endswith(".dicom") or file.lower().endswith(".dcm"):
+                output_file_path = os.path.join(output_subdir, os.path.splitext(file)[0] + ".png")
                 dicom_to_png(input_file_path, output_file_path)
 
             elif file == "index.html":
-                # copy index.html
                 shutil.copy(input_file_path, output_subdir)
 
-# input and output folders
 in_dir = "../images"
-out_dir = "../png_images" 
+out_dir = "../png_images"
 
 process_dicom_folder(in_dir, out_dir)
 
-print("Done!")
+print("Done! Check the png_images folder.")
