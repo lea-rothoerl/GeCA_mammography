@@ -4,8 +4,29 @@ from PIL import Image
 import os
 import shutil
 
+def crop_borders(image_array, threshold=10):
+    """
+    Cropping image to the smallest rectangle containing all pixels with 
+    intensity above threshold.
+    """
+    # binary mask with above/below threshold 
+    mask = image_array > threshold
+    
+    # return original image if mask empty
+    if not mask.any():
+        return image_array
+
+    # get coordinates of non-black pixels
+    coords = np.argwhere(mask)
+    
+    y0, x0 = coords.min(axis=0)
+    y1, x1 = coords.max(axis=0)
+    
+    # crop image to these coordinates
+    return image_array[y0:y1+1, x0:x1+1]
+
 def dicom_to_png(dicom_path, output_path):
-    """Convert one DICOM image to PNG."""
+    """Convert DICOM image to PNG and crop off black borders."""
     try:
         dicom_image = pydicom.dcmread(dicom_path)
 
@@ -20,7 +41,10 @@ def dicom_to_png(dicom_path, output_path):
         image_array = (image_array - np.min(image_array)) / (np.max(image_array) - np.min(image_array)) * 255.0
         image_array = image_array.astype(np.uint8)
 
-        # convert to PNG
+        # remove black borders
+        image_array = crop_borders(image_array)
+
+        # convert to PIL, save as PNG
         image = Image.fromarray(image_array)
         image.save(output_path)
 
@@ -28,7 +52,7 @@ def dicom_to_png(dicom_path, output_path):
         print(f"Error processing {dicom_path}: {e}")
 
 def process_dicom_folder(input_root, output_root):
-    """Process subfolders, convert DICOM images and copy index.html."""
+    """Process subfolders, convert DICOM images and copy index file."""
     for subdir, _, files in os.walk(input_root):
         relative_path = os.path.relpath(subdir, input_root)
         output_subdir = os.path.join(output_root, relative_path)
@@ -38,7 +62,7 @@ def process_dicom_folder(input_root, output_root):
         for file in files:
             input_file_path = os.path.join(subdir, file)
 
-            # case-insensitive check for .dicom
+            # check for file ending
             if file.lower().endswith(".dicom"):
                 output_file_path = os.path.join(output_subdir, os.path.splitext(file)[0] + ".png")
                 dicom_to_png(input_file_path, output_file_path)
