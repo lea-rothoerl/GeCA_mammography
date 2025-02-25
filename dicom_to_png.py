@@ -4,13 +4,25 @@ from PIL import Image
 import os
 import shutil
 
-def crop_borders(image_array, threshold=10):
+def crop_borders(image_array, threshold=10, white_threshold=240):
     """
     Cropping image to the smallest rectangle containing all pixels with 
     intensity above threshold.
+
+    Parameters:
+    - image_array: The normalized image array.
+    - threshold: Pixel intensity threshold for non-black regions.
+    - white_threshold: Pixel intensity threshold for bright regions (like text).
+    
+    Returns:
+    - Cropped image array.
     """
-    # binary mask with above/below threshold 
-    mask = image_array > threshold
+    # color whites black for cropping
+    rem_white = image_array.copy()
+    rem_white[rem_white > white_threshold] = 0
+
+    # binary mask with values above/below threshold 
+    mask = rem_white > threshold
     
     # return original image if mask empty
     if not mask.any():
