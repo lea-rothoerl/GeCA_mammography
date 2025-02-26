@@ -56,7 +56,7 @@ def resize_with_padding(image, target_size=(512, 512)):
     new_size = (int(original_size[0] * scale), int(original_size[1] * scale))
     
     # resize
-    resized_image = image.resize(new_size, Image.ANTIALIAS)
+    resized_image = image.resize(new_size, Image.Resampling.LANCZOS)
 
     # create image with desired size
     new_image = Image.new("L", target_size, 0)
