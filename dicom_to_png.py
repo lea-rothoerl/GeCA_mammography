@@ -5,7 +5,7 @@ import os
 import shutil
 import argparse
 
-def crop_borders(image_array, threshold=10, white_threshold=240):
+def crop_borders(image_array, threshold=10, white_threshold=200):
     """
     Crop the image to the smallest rectangle containing all pixels above a threshold,
     ignoring very bright regions (white text on border).
