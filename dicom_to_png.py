@@ -5,25 +5,28 @@ import os
 import shutil
 import argparse
 
-def crop_borders(image_array, threshold=10, white_threshold=200):
+def crop_borders(image_array, threshold=10):
     """
     Crop the image to the smallest rectangle containing all pixels above a threshold,
-    ignoring very bright regions (white text on border).
+    ignoring corners containing patient informartion according to documentation.
     
     Parameters:
     - image_array: The normalized image array.
     - threshold: Minimum intensity to be considered non-black.
-    - white_threshold: Threshold to ignore text in cropping.
     
     Returns:
     - Cropped image array.
     """
-    # mask out overly white pixels
-    rem_white = image_array.copy()
-    rem_white[rem_white > white_threshold] = 0
+    # mask out info
+    rem_info = image_array.copy()
+    h, w = rem_info.shape
+    rem_info[:45, :80] = 0       # top left
+    rem_info[:45, w-80:w] = 0    # top right
+    rem_info[h-45:h, :80] = 0    # bottom left
+    rem_info[h-45:h, w-80:w] = 0 # bottom right
 
     # binary mask for above and below threshold
-    mask = rem_white > threshold
+    mask = rem_info > threshold
     
     # catch problems with empty mask
     if not mask.any():
