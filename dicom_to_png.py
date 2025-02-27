@@ -219,7 +219,6 @@ if __name__ == "__main__":
             exit(1)
 
     process_dicom_folder(args.in_folder, args.out_folder,
-                         target_size=tuple(args.target_size),
                          apply_resize=args.resize,
                          extract_lesions_flag=args.lesions,
                          annotations_df=annotations_df)
