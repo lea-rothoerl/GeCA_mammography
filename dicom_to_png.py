@@ -169,12 +169,12 @@ def extract_lesions(dicom_path, annotations_df, output_root, target_size=(512, 5
     except Exception as e:
         print(f"Error extracting lesions from {dicom_path}: {e}")
 
-def process_dicom_folder(input_root, output_root, target_size=(512, 512), apply_resize=False, extract_lesions=False, annotations_df=None):
+def process_dicom_folder(input_root, output_root, target_size=(512, 512), apply_resize=False, lesions_flag=False, annotations_df=None):
     """
     Process all DICOM images in subfolders, converting them to PNG.
     
     If apply_resize is True, each image is resized (with padding) to target_size.
-    If extract_lesions is False, converts full DICOM images to PNG (cropped/resized as specified).
+    If lesions_flag is False, converts full DICOM images to PNG (cropped/resized as specified).
     If True, extracts lesion regions based on bounding boxes from annotations_df.
 
     Also copies index.html files.
@@ -187,7 +187,7 @@ def process_dicom_folder(input_root, output_root, target_size=(512, 512), apply_
         for file in files:
             input_file_path = os.path.join(subdir, file)
             if file.lower().endswith(".dicom"):
-                if extract_lesions:
+                if lesions_flag:
                     extract_lesions(input_file_path, annotations_df, output_root, target_size=target_size, apply_resize=apply_resize)
                 else:
                     output_file_path = os.path.join(output_subdir, os.path.splitext(file)[0] + ".png")
@@ -220,7 +220,7 @@ if __name__ == "__main__":
 
     process_dicom_folder(args.in_folder, args.out_folder,
                          apply_resize=args.resize,
-                         extract_lesions=args.lesions,
+                         lesions_flag=args.lesions,
                          annotations_df=annotations_df)
 
     print("Done!")
