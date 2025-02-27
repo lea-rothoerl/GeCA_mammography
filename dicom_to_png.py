@@ -137,13 +137,13 @@ def extract_lesions(dicom_path, annotations_df, output_root, target_size=(512, 5
         # get annotations for respective ID
         lesion_rows = annotations_df[annotations_df['image_id'] == image_id]
 
-        # handle images without lesions
-        if lesion_rows.empty:
-            print(f"No lesion annotations for {dicom_path}.")
-            return
-
         # process each single lesion
         for idx, row in lesion_rows.iterrows():
+            # handle images without lesions
+            if pd.isnull(row[['xmin', 'ymin', 'xmax', 'ymax']]).any():
+                continue 
+        
+        # Skip this lesion and move to the next
             xmin = int(row['xmin'])
             ymin = int(row['ymin'])
             xmax = int(row['xmax'])
