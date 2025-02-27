@@ -38,7 +38,8 @@ def crop_borders(image_array, threshold=10):
     y1, x1 = coords.max(axis=0)
     
     # crop to these boundaries
-    return image_array[y0:y1+1, x0:x1+1]
+    #return image_array[y0:y1+1, x0:x1+1]
+    return rem_info[y0:y1+1, x0:x1+1]
 
 def resize_with_padding(image, target_size=(512, 512)):
     """
