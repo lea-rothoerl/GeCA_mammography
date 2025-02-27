@@ -220,7 +220,7 @@ if __name__ == "__main__":
 
     process_dicom_folder(args.in_folder, args.out_folder,
                          apply_resize=args.resize,
-                         extract_lesions_flag=args.lesions,
+                         extract_lesions=args.lesions,
                          annotations_df=annotations_df)
 
     print("Done!")
