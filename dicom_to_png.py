@@ -17,6 +17,8 @@ def crop_borders(image_array, threshold=10):
     Returns:
     - Cropped image array.
     """
+    white_threshold = 150
+    
     # mask out info
     rem_info = image_array.copy()
     h, w = rem_info.shape
@@ -24,6 +26,7 @@ def crop_borders(image_array, threshold=10):
     rem_info[:45, w-80:w] = 0    # top right
     rem_info[h-45:h, :80] = 0    # bottom left
     rem_info[h-45:h, w-80:w] = 0 # bottom right
+    rem_info[rem_info > white_threshold] = 0
 
     # binary mask for above and below threshold
     mask = rem_info > threshold
@@ -39,18 +42,18 @@ def crop_borders(image_array, threshold=10):
     
     # crop to these boundaries
     #return image_array[y0:y1+1, x0:x1+1]
-    return rem_info[y0:y1+1, x0:x1+1]
+    return image_array[y0:y1+1, x0:x1+1]
 
 def resize_with_padding(image, target_size=(512, 512)):
     """
-    Resize image while preserving aspect ratio, then pad it to target_size.
+    Resize image and pad to target_size.
     
     Parameters:
     - image: A PIL Image.
     - target_size: Tuple (width, height) for desired output size.
     
     Returns:
-    - A new PIL Image of size target_size.
+    - A new padded PIL Image of size target_size.
     """
     original_size = image.size  # (width, height)
     target_width, target_height = target_size
