@@ -135,17 +135,14 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         description="Convert DICOM images to PNG with cropping/resizing."
     )
-    parser.add_argument("input_folder", help="Path to the input folder containing DICOM images.")
-    parser.add_argument("output_folder", help="Path to the output folder for PNG images.")
+    parser.add_argument("in_folder", help="Path to the input folder containing DICOM images.")
+    parser.add_argument("out_folder", help="Path to the output folder for PNG images.")
     parser.add_argument("--resize", action="store_true", 
                         help="Apply resizing with padding to a uniform target size.")
-    parser.add_argument("--target_size", type=int, nargs=2, default=[512, 512],
-                        help="Target size as two integers: width height (default: 512 512).")
     
     args = parser.parse_args()
     
-    process_dicom_folder(args.input_folder, args.output_folder,
-                         target_size=tuple(args.target_size),
+    process_dicom_folder(args.in_folder, args.out_folder,
                          apply_resize=args.resize)
     
     print("Done!")
