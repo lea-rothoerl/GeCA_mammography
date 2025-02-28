@@ -191,10 +191,9 @@ def process_dicom_folder(input_root, output_root, target_size=(512, 512), apply_
                     os.makedirs(output_subdir, exist_ok=True)
                     output_file_path = os.path.join(output_subdir, os.path.splitext(file)[0] + ".png")
                     dicom_to_png(input_file_path, output_file_path, target_size=target_size, apply_resize=apply_resize)
-            elif file == "index.html":
+            elif file == "index.html" and not lesions_flag:
                 relative_path = os.path.relpath(subdir, input_root)
                 output_subdir = os.path.join(output_root, relative_path)
-                os.makedirs(output_subdir, exist_ok=True)
                 shutil.copy(input_file_path, output_subdir)
 
 if __name__ == "__main__":
