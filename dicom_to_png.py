@@ -143,7 +143,6 @@ def extract_lesions(dicom_path, annotations_df, output_root, target_size=(512, 5
             if pd.isnull(row[['xmin', 'ymin', 'xmax', 'ymax']]).any():
                 continue 
         
-        # Skip this lesion and move to the next
             xmin = int(row['xmin'])
             ymin = int(row['ymin'])
             xmax = int(row['xmax'])
@@ -157,11 +156,12 @@ def extract_lesions(dicom_path, annotations_df, output_root, target_size=(512, 5
                 lesion_img = resize_with_padding(lesion_img, target_size=target_size)
 
             # grab study_id from the CSV for output folder
-            study_id = str(row['study_id'])
-            lesion_out_dir = os.path.join(output_root, study_id, "lesions")
-            os.makedirs(lesion_out_dir, exist_ok=True)
+            #study_id = str(row['study_id'])
+            #lesion_out_dir = os.path.join(output_root, study_id, "lesions")
+            #os.makedirs(lesion_out_dir, exist_ok=True)
             lesion_filename = f"{image_id}_lesion_{idx}.png"
-            lesion_out_path = os.path.join(lesion_out_dir, lesion_filename)
+            #lesion_out_path = os.path.join(lesion_out_dir, lesion_filename)
+            lesion_out_path = os.path.join(output_root, lesion_filename)
             lesion_img.save(lesion_out_path)
             print(f"Extracted lesion: {lesion_out_path}")
 
