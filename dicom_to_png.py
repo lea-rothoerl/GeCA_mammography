@@ -180,19 +180,21 @@ def process_dicom_folder(input_root, output_root, target_size=(512, 512), apply_
     Also copies index.html files.
     """
     for subdir, _, files in os.walk(input_root):
-        relative_path = os.path.relpath(subdir, input_root)
-        output_subdir = os.path.join(output_root, relative_path)
-        os.makedirs(output_subdir, exist_ok=True)
-
         for file in files:
             input_file_path = os.path.join(subdir, file)
             if file.lower().endswith(".dicom"):
                 if lesions_flag:
                     extract_lesions(input_file_path, annotations_df, output_root, target_size=target_size, apply_resize=apply_resize)
-                else:
+                else:        
+                    relative_path = os.path.relpath(subdir, input_root)
+                    output_subdir = os.path.join(output_root, relative_path)
+                    os.makedirs(output_subdir, exist_ok=True)
                     output_file_path = os.path.join(output_subdir, os.path.splitext(file)[0] + ".png")
                     dicom_to_png(input_file_path, output_file_path, target_size=target_size, apply_resize=apply_resize)
             elif file == "index.html":
+                relative_path = os.path.relpath(subdir, input_root)
+                output_subdir = os.path.join(output_root, relative_path)
+                os.makedirs(output_subdir, exist_ok=True)
                 shutil.copy(input_file_path, output_subdir)
 
 if __name__ == "__main__":
