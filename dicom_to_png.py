@@ -213,7 +213,7 @@ if __name__ == "__main__":
     annotations_df = None
     if args.lesions:
         try:
-            annotations_df = pd.read_csv("../finding_annotations.csv") # NEED TO KEEP THIS UP TO DATE
+            annotations_df = pd.read_csv("../shared_data/VinDr_Mammo/finding_annotations.csv") # NEED TO KEEP THIS UP TO DATE
             print("Loaded finding_annotations.csv")
         except Exception as e:
             print(f"Error loading finding_annotations.csv: {e}")
